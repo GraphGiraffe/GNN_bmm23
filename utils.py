@@ -17,7 +17,7 @@ def generate_edges_dir(data_dir):
         receivers = np.amin(edges, axis=1).reshape(-1, 1)
         senders = np.amax(edges, axis=1).reshape(-1, 1)
 
-        edges = np.hstack([senders, receivers], dtype='int32')
+        edges = np.hstack([senders, receivers])
         # print(edges.shape)
         edges = np.unique(edges, axis=0)
         edges_inv = edges[:, [1, 0]]
