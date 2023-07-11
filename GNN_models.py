@@ -98,14 +98,12 @@ class FlowGNN_original_skipBC(nn.Module):  # напрямую прокидыва
 class FlowGNN_conv_block(nn.Module):
 
     def __init__(self, edge_dims, node_dims, hidden_size=128,
-                 fc_con=False, batchnorm=False, idx=0, selu=False):
+                 fc_con=False, idx=0):
         super(FlowGNN_conv_block, self).__init__()
-        self.conv = ProcessorLayer(edge_dims, node_dims, hidden_size, selu)
+        self.conv = ProcessorLayer(edge_dims, node_dims, hidden_size)
         self.smooth = SmoothingLayer()
 
         self.node_norm_layer = None
-        if batchnorm:
-            self.node_norm_layer = nn.BatchNorm1d(node_dims)
 
         self.fc_con = fc_con  # bool,
         self.idx = idx
@@ -155,7 +153,6 @@ class FlowGNN(nn.Module):  # универсальная модель
 
     def __init__(self, edge_filters, node_filters, fc_in_dim, fc_out_dim,
                  fc_con_list=None, fc_hidden_layers=(128, 128),
-                 batchnorm=None, selu=None,
                  geom_in_dim=2, out_dim=4):
         super(FlowGNN, self).__init__()
 
@@ -167,8 +164,6 @@ class FlowGNN(nn.Module):  # универсальная модель
         self.fc_con_list = fc_con_list  # [1,3,4,6] слои куда заходит fc слой
         self.fc_hidden_layers = fc_hidden_layers
 
-        self.batchnorm = batchnorm
-        self.selu = selu
         self.geom_in_dim = geom_in_dim
         self.out_dim = out_dim
 
@@ -181,10 +176,7 @@ class FlowGNN(nn.Module):  # универсальная модель
             if i in self.fc_con_list:
                 fc_con = True
                 self.fc_layers_list.append(FlowGNN_fc_block(self.fc_out_dim, self.fc_hidden_layers))
-            self.gcnn_layers_list.append(FlowGNN_conv_block(ef, nf,
-                                                            fc_con=fc_con,
-                                                            batchnorm=self.batchnorm[i], idx=i,
-                                                            selu=self.selu[i]))
+            self.gcnn_layers_list.append(FlowGNN_conv_block(ef, nf, fc_con=fc_con, idx=i))
 
         self.decoder = nn.LazyLinear(self.out_dim)
 

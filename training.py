@@ -26,12 +26,8 @@ if __name__ == "__main__":
     fc_in_dim = nn_cfg['fc_in_dim']
     fc_out_dim = nn_cfg['fc_out_dim']
     out_dim = nn_cfg['out_dim']
-    node_skip_cons_list = nn_cfg['node_skip_cons_list']
-    edge_skip_cons_list = nn_cfg['edge_skip_cons_list']
     fc_con_list = nn_cfg['fc_con_list']
     fc_hidden_layers = nn_cfg["fc_hidden_layers"]
-    batchnorm_layers = nn_cfg["batchnorm"]
-    selu = nn_cfg["selu"]
 
     loss = train_cfg["loss"]
     train_ratio = train_cfg['train_ratio']
@@ -73,10 +69,7 @@ if __name__ == "__main__":
     print(train_dataset[0])
 
     gnn_model = FlowGNN(edge_filters, node_filters, fc_in_dim, fc_out_dim,
-                        node_skip_cons_list=node_skip_cons_list, edge_skip_cons_list=edge_skip_cons_list,
-                        fc_con_list=fc_con_list, fc_hidden_layers=fc_hidden_layers,
-                        batchnorm=batchnorm_layers,
-                        selu=selu)
+                        fc_con_list=fc_con_list, fc_hidden_layers=fc_hidden_layers)
 
     optimizer = torch.optim.Adam(gnn_model.parameters(), lr=0.001)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=decay_step, gamma=decay_factor)
