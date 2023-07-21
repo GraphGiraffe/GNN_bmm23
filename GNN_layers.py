@@ -45,8 +45,8 @@ class ProcessorLayer(MessagePassing):
     def forward(self, x, edge_index, edge_attr):
         out, updated_edges = self.propagate(edge_index, x=x, edge_attr=edge_attr)
         print(x.shape, out.shape, updated_edges.shape, edge_index.shape, edge_attr.shape)
-        if x.shape[0] != out.shape[0]:
-          out = torch.cat([out[:0], out], dim=1)
+        # if x.shape[0] != out.shape[0]:  # TODO: error wrang sizes
+        #   out = torch.cat([out[:0], out], dim=1)
         updated_nodes = torch.cat([x, out], dim=1)
         updated_nodes = self.node_mlp(updated_nodes)
 
