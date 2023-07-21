@@ -170,6 +170,17 @@ class FlowGNN(nn.Module):  # универсальная модель
         self.gcnn_layers_list = nn.ModuleList()
         self.fc_layers_list = nn.ModuleList()
 
+        self.encoder = nn.Sequential(
+            nn.Conv1d(1, 10, kernel_size=7, stride=1, padding=0),
+            # nn.ReLU(),
+            nn.Conv1d(10, 20, kernel_size=7, stride=2, padding=0),
+            # nn.ReLU(),
+            nn.Conv1d(20, 10, kernel_size=7, stride=2, padding=0),
+            # nn.ReLU(),
+            nn.Conv1d(10, 1, kernel_size=7, stride=1, padding=0),
+            # nn.ReLU(),
+        )
+
         for i, (ef, nf) in enumerate(zip(self.edge_filters, self.node_filters)):
 
             fc_con = False
@@ -187,8 +198,9 @@ class FlowGNN(nn.Module):  # универсальная модель
         edge_outs = {}  # edges
         skip_info = x[:, :self.geom_in_dim]
         fc_out = None
+        encoder_out = self.encoder(data.bc.reshape(3000, 1, -1))
         if self.fc_con_list is not None:
-            fc_out = self.fc_layers_list[0](data.bc)
+            fc_out = self.fc_layers_list[0](encoder_out)
         fc_count = 1
 
         for i, layer in enumerate(self.gcnn_layers_list):

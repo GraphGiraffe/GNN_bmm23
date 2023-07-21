@@ -218,9 +218,10 @@ def make_dataset(data_dir, num_files, dataset_name=None, data_source=None, with_
 
         bc = None
         if with_bc:
-            bc = torch.tensor((pd.read_csv(os.path.join(data_dir, 'bcs', file), header=None)).values).to(
+            bc = torch.tensor((pd.read_csv(os.path.join(data_dir, 'sv', file), header=None)).values).to(
                 torch.float32).swapaxes(0, 1)
-            bc = bc.repeat(nodes.shape[0], 1)
+            # bc = bc.repeat(nodes.shape[0], 1)
+            bc = torch.FloatTensor(bc).reshape(380164, 1, -1)
 
         if norm_coord:
             xy_norm = torch.div(torch.sub(nodes[:, :2], dom_bound_min), range_xy)
