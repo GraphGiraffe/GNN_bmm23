@@ -219,9 +219,9 @@ def make_dataset(data_dir, num_files, dataset_name=None, data_source=None, with_
         bc = None
         if with_bc:
             bc = torch.tensor((pd.read_csv(os.path.join(data_dir, 'sv', file), header=None)).values).to(
-                torch.float32).swapaxes(0, 1)
+                torch.float32).swapaxes(0, 1).reshape(1, 1, 100)
             # bc = bc.repeat(nodes.shape[0], 1)
-            bc = torch.FloatTensor(bc).reshape(380164, 1, -1)
+            # bc = torch.FloatTensor(bc).reshape(380164, 1, -1)
 
         if norm_coord:
             xy_norm = torch.div(torch.sub(nodes[:, :2], dom_bound_min), range_xy)
@@ -232,7 +232,7 @@ def make_dataset(data_dir, num_files, dataset_name=None, data_source=None, with_
 
                 nodes = torch.cat([xy_norm, nodes[:, 2].reshape(-1, 1), bc_in_nodes, nodes[:, 7:]], 1).to(torch.float32)
             else:
-                nodes = torch.cat([xy_norm, nodes[:, 2].reshape(-1, 1), nodes[:, 3:]], 1).to(torch.float32)
+                nodes = torch.cat([xy_norm], 1).to(torch.float32)
 
             edge_feats = torch.mean(nodes[edges], 1)
 

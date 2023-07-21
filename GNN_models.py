@@ -198,10 +198,13 @@ class FlowGNN(nn.Module):  # универсальная модель
         edge_outs = {}  # edges
         skip_info = x[:, :self.geom_in_dim]
         fc_out = None
-        encoder_out = self.encoder(data.bc.reshape(3000, 1, -1))
+        encoder_out = torch.squeeze(self.encoder(data.bc)) 
+        encoder_out = encoder_out[data.batch]
+        print(f'encoder_out.shape = {encoder_out.shape}')
         if self.fc_con_list is not None:
             fc_out = self.fc_layers_list[0](encoder_out)
         fc_count = 1
+        print(f'fc_out.shape = {fc_out.shape}')
 
         for i, layer in enumerate(self.gcnn_layers_list):
 
@@ -210,6 +213,10 @@ class FlowGNN(nn.Module):  # универсальная модель
                 graph_pool = graph_pool[data.batch]
                 fc_out = self.fc_layers_list[fc_count](torch.cat([data.bc, fc_out, graph_pool], 1))
                 fc_count += 1
+            print(f'x.shape = {x.shape}')
+            print(f'fc_out.shape = {fc_out.shape}')
+            print(f'data.edge_index.shape = {data.edge_index.shape}')
+            print(f'data.edge_attr.shape = {data.edge_attr.shape}')
             x, edge_attr = layer(x, data.edge_index, data.edge_attr, fc_out, skip_info)
 
             x_outs[i] = x
